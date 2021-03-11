@@ -1821,6 +1821,12 @@ async function addExtensionDarwin(extension_csv, version) {
             case /^:/.test(ext_name):
                 remove_script += '\nremove_extension ' + ext_name.slice(1);
                 return;
+            // match extensions from GitHub. Do this before checking for semver as
+            // the version may match that as well
+            case /.+-.+\/.+@.+/.test(extension):
+                matches = /.+-(.+)\/(.+)@(.+)/.exec(extension);
+                add_script += await utils.joins('\nadd_extension_from_github', ext_name, matches[1], matches[2], matches[3], ext_prefix);
+                return;
             // match 5.3blackfire...8.0blackfire
             // match 5.3blackfire-(semver)...8.0blackfire-(semver)
             // match couchbase, pdo_oci, oci8, http, pecl_http
@@ -1835,12 +1841,6 @@ async function addExtensionDarwin(extension_csv, version) {
             // match pre-release versions. For example - xdebug-beta
             case /.+-(stable|beta|alpha|devel|snapshot|rc|preview)/.test(extension):
                 add_script += await utils.joins('\nadd_unstable_extension', ext_name, ext_version, ext_prefix);
-                return;
-            // match extensions from GitHub. Do this before checking for semver as
-            // the version may match that as well
-            case /.+-.+\/.+@.+/.test(extension):
-                matches = /.+-(.+)\/(.+)@(.+)/.exec(extension);
-                add_script += await utils.joins('\nadd_extension_from_github', ext_name, matches[1], matches[2], matches[3], ext_prefix);
                 return;
             // match semver
             case /.+-\d+\.\d+\.\d+.*/.test(extension):
@@ -1974,6 +1974,12 @@ async function addExtensionLinux(extension_csv, version) {
             case /^:/.test(ext_name):
                 remove_script += '\nremove_extension ' + ext_name.slice(1);
                 return;
+            // match extensions from GitHub. Do this before checking for semver as
+            // the version may match that as well
+            case /.+-.+\/.+@.+/.test(extension):
+                matches = /.+-(.+)\/(.+)@(.+)/.exec(extension);
+                add_script += await utils.joins('\nadd_extension_from_github', ext_name, matches[1], matches[2], matches[3], ext_prefix);
+                return;
             // match 5.3blackfire...8.0blackfire
             // match 5.3blackfire-(semver)...8.0blackfire-(semver)
             // match 5.3pdo_cubrid...7.2php_cubrid, 5.3cubrid...7.4cubrid
@@ -1993,12 +1999,6 @@ async function addExtensionLinux(extension_csv, version) {
             // match pre-release versions. For example - xdebug-beta
             case /.+-(stable|beta|alpha|devel|snapshot|rc|preview)/.test(extension):
                 add_script += await utils.joins('\nadd_unstable_extension', ext_name, ext_version, ext_prefix);
-                return;
-            // match extensions from GitHub. Do this before checking for semver as
-            // the version may match that as well
-            case /.+-.+\/.+@.+/.test(extension):
-                matches = /.+-(.+)\/(.+)@(.+)/.exec(extension);
-                add_script += await utils.joins('\nadd_extension_from_github', ext_name, matches[1], matches[2], matches[3], ext_prefix);
                 return;
             // match semver versions
             case /.+-\d+\.\d+\.\d+.*/.test(extension):
